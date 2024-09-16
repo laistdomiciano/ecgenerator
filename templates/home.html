@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EC-Generator</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header class="bg-light py-3">
+        <div class="container d-flex justify-content-between align-items-center">
+            <h1 class="h3 mb-0">Employment Contract Generator (EC-Generator)</h1>
+            <nav>
+                <a href="/signup" class="btn btn-primary me-2">Sign Up</a>
+                <a href="/login" class="btn btn-secondary">Login</a>
+            </nav>
+        </div>
+    </header>
+    <main id="main-content" class="container my-5">
+        {% block content %}
+        <div class="text-center">
+            <h2>Welcome to the EC-Generator</h2>
+            <p class="lead">Create, customize, and store your contracts with ease!</p>
+            <p class="lead text-muted fst-italic"> It's quick, simple, and built just for you.</p>
+            <a href="/signup" class="btn btn-success btn-lg me-3">Get Started</a>
+            <a href="/login" class="btn btn-outline-primary btn-lg">Login</a>
+        </div>
+        {% endblock %}
+    </main>
+    <footer class="text-center py-4 bg-dark text-white">
+        <p>&copy; 2024 EC-Generator - Developed by <a href="https://laistdomiciano.github.io/portfolio/" target="_blank" rel="noopener noreferrer" class="text-warning">Lais Domiciano</a>. <br />Made with Love &hearts;</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>
