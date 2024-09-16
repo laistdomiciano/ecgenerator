@@ -1,25 +1,37 @@
-<!-- frontend/templates/create_contract.html -->
 {% extends "home.html" %}
 
 {% block content %}
 <div class="container my-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Dashboard</h2>
+        <h2>Create Contract</h2>
         <a href="/logout" class="btn btn-danger">Logout</a>
     </div>
     <div class="card shadow-sm">
         <div class="card-body">
-            <h5 class="card-title">Welcome, {{ user.username }}!</h5>
-            <p class="card-text">Choose a contract type to generate:</p>
-            <!-- Bootstrap Dropdown -->
+            <h5 class="card-title">Welcome, {{ session['user']['username'] }}!</h5>
+            <p class="card-text">Choose a contract type and employee to generate a contract:</p>
+
+            <!-- Dropdown for contract types -->
             <div class="dropdown">
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="contractDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     Select Contract Type
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="contractDropdown">
-                    <li><a class="dropdown-item" href="#" data-type="fulltime">Full-Time Employment</a></li>
-                    <li><a class="dropdown-item" href="#" data-type="parttime">Part-Time Employment</a></li>
-                    <li><a class="dropdown-item" href="#" data-type="freelance">Freelance Contract</a></li>
+                    {% for contract in contracts %}
+                    <li><a class="dropdown-item" href="#" data-contract-id="{{ contract.id }}">{{ contract.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Dropdown for employees -->
+            <div class="dropdown mt-3">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="employeeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Select Employee
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="employeeDropdown">
+                    {% for employee in employees %}
+                    <li><a class="dropdown-item" href="#" data-employee-id="{{ employee.id }}">{{ employee.employee_name }}</a></li>
+                    {% endfor %}
                 </ul>
             </div>
         </div>
@@ -35,7 +47,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <p>Are you sure you want to generate a <span id="contractTypeName"></span> contract?</p>
+        <p>Are you sure you want to generate this contract?</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -44,4 +56,6 @@
     </div>
   </div>
 </div>
+
 {% endblock %}
+

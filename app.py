@@ -1,8 +1,9 @@
-from flask import Flask, request, session, render_template, redirect, url_for, flash
+from flask import Flask, request, render_template, flash, session, redirect, url_for
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-# from backend.app.models import User
 import requests
 import os
+from functools import wraps
+
 
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
@@ -15,6 +16,14 @@ app.secret_key = os.environ.get('FRONTEND_SECRET_KEY', '1234secret')
 
 BACKEND_API_URL = os.environ.get('BACKEND_API_URL', 'https://ecgenerator-backend.onrender.com')
 
+
+def token_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'access_token' not in session:
+            return redirect(url_for('login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -69,32 +78,45 @@ def login():
         result = response.json()
 
         if response.status_code == 200 and 'token' in result:
-            # session['user'] = result['user']
-            # session['access_token'] = result['token']
-            return render_template('dashboard.html')
-            # return redirect(url_for('dashboard'))
+            # Check if 'id' exists in the result['user'] object
+            if 'id' in result['user']:
+                # Store user information and token in the session
+                session['user'] = result['user']
+                session['access_token'] = result['token']
+
+                # Render the dashboard with user info
+                return render_template('dashboard.html', user=session['user'])
+            else:
+                # Handle the case where 'id' is missing
+                error = "User ID not found in the response. Please contact support."
+                return render_template('login.html', error=error)
         else:
-            error = result.get('error', 'Invalid credentials.')
+            # Handle login errors (invalid credentials, etc.)
+            error = result.get('error', 'Invalid credentials or an error occurred.')
             return render_template('login.html', error=error)
 
     return render_template('login.html')
 
-@app.route('/logout')
-@login_required
-def logout():
-    session.pop('access_token', None)
-    session.pop('user', None)
-    logout_user()
-    return redirect(url_for('login'))
+
 
 @app.route('/dashboard')
-@login_required
+@token_required
 def dashboard():
-    print("Inside Dashboard")
-    return render_template('dashboard.html', user=session.get('user'))
+    token = session.get('access_token')
+    if token:
+        return render_template('dashboard.html', user=session.get('user'))
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/logout')
+@token_required
+def logout():
+    session.pop('access_token', None)
+    return redirect(url_for('login'))
+
 
 @app.route('/create_employee', methods=['GET', 'POST'])
-@login_required
+@token_required
 def create_employee():
     if request.method == 'POST':
         # Collect the form data from the HTML form
@@ -137,29 +159,34 @@ def create_employee():
     return render_template('create_employee.html')
 
 
-
 @app.route('/create_contract', methods=['GET'])
-@login_required
+@token_required
 def create_contract():
     headers = {
         'Authorization': f"Bearer {session.get('access_token')}"
     }
 
-    response_contract = requests.get(f"{BACKEND_API_URL}/create_contract", headers=headers)
-    response_employee = requests.get(f"{BACKEND_API_URL}/create_contract", headers=headers)
-    contracts = response_contract.json()
-    employees = response_employee.json()
+    try:
+        response_employee = requests.get(f"{BACKEND_API_URL}/employees", headers=headers)
+        response_contract = requests.get(f"{BACKEND_API_URL}/contracts", headers=headers)
 
-    if response_contract.status_code and response_employee.status_code == 200:
-        return render_template('create_contract.html', employees=employees, contracts=contracts)
-    else:
-        error_contracts = employees.get('error', 'An error occurred while retrieving employees.')
-        error_employees = employees.get('error', 'An error occurred while retrieving employees.')
-        return render_template('create_contract.html', error_contracts=error_contracts,error_employees=error_employees)
+        if response_employee.status_code == 200 and response_contract.status_code == 200:
+            employees = response_employee.json()
+            contracts = response_contract.json()
+            return render_template('create_contract.html', employees=employees, contracts=contracts)
+        else:
+            error_contracts = response_contract.json().get('error', 'Failed to retrieve contracts')
+            error_employees = response_employee.json().get('error', 'Failed to retrieve employees')
+            return render_template('create_contract.html', error_contracts=error_contracts, error_employees=error_employees)
+
+    except requests.exceptions.RequestException as e:
+        return render_template('create_contract.html', error=f"An error occurred: {str(e)}")
+    except ValueError as e:
+        return render_template('create_contract.html', error="Invalid response from the server.")
 
 
 @app.route('/update_user/<int:user_id>', methods=['GET', 'POST'])
-@login_required
+@token_required
 def update_user(user_id):
     if request.method == 'POST':
         form_data = {
@@ -188,7 +215,3 @@ def update_user(user_id):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))
     app.run(host="0.0.0.0", port=port)
-
-
-
-
