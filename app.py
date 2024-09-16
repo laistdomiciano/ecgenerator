@@ -1,6 +1,6 @@
 from flask import Flask, request, session, render_template, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from backend.app.models import User
+# from backend.app.models import User
 import requests
 import os
 
@@ -18,7 +18,18 @@ BACKEND_API_URL = os.environ.get('BACKEND_API_URL', 'https://ecgenerator-backend
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    """
+    Load the user by making a request to the backend to get the user info
+    """
+    headers = {
+        'Authorization': f"Bearer {session.get('access_token')}"
+    }
+    response = requests.get(f"{BACKEND_API_URL}/users/{user_id}", headers=headers)
+
+    if response.status_code == 200:
+        user_data = response.json()
+        return User(user_data)
+    return None
 
 @app.route('/')
 def home():
