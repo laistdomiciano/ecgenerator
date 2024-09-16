@@ -69,7 +69,6 @@ def login():
         result = response.json()
 
         if response.status_code == 200 and 'token' in result:
-            print(url_for('dashboard'))
             # session['user'] = result['user']
             # session['access_token'] = result['token']
             return render_template('dashboard.html')

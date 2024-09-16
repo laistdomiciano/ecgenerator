@@ -1,4 +1,6 @@
-# ecgenerator
+# EC-Generator
+
+https://ecgenerator.onrender.com/
 
 # Employment Contract Generator API
 
