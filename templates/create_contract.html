@@ -1,61 +1,54 @@
 {% extends "home.html" %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Create Contract</h2>
-        <a href="/logout" class="btn btn-danger">Logout</a>
+<div class="container mt-5 dashboard-container">
+    <h2>Create Contract</h2>
+
+    <!-- Dropdown for selecting contract type -->
+    <div class="dropdown mt-4">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="contractTypeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            Select Contract Type
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="contractTypeDropdown" id="contract-types-list">
+            <!-- Contract types will be dynamically loaded here -->
+        </ul>
     </div>
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h5 class="card-title">Welcome, {{ session['user']['username'] }}!</h5>
-            <p class="card-text">Choose a contract type and employee to generate a contract:</p>
 
-            <!-- Dropdown for contract types -->
-            <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="contractDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    Select Contract Type
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="contractDropdown">
-                    {% for contract in contracts %}
-                    <li><a class="dropdown-item" href="#" data-contract-id="{{ contract.id }}">{{ contract.name }}</a></li>
-                    {% endfor %}
-                </ul>
-            </div>
+    <!-- Dropdown for selecting employees without contract -->
+    <div class="dropdown mt-4">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="employeeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            Select Employee
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="employeeDropdown" id="employees-list">
+            <!-- Employees will be dynamically loaded here -->
+        </ul>
+    </div>
 
-            <!-- Dropdown for employees -->
-            <div class="dropdown mt-3">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="employeeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    Select Employee
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="employeeDropdown">
-                    {% for employee in employees %}
-                    <li><a class="dropdown-item" href="#" data-employee-id="{{ employee.id }}">{{ employee.employee_name }}</a></li>
-                    {% endfor %}
-                </ul>
+    <!-- Button to generate contract -->
+    <button id="generateContractBtn" class="btn btn-primary mt-4" data-bs-toggle="modal" data-bs-target="#contractModal">
+        Generate Contract
+    </button>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Optional: Modal for Contract Generation -->
-<div class="modal fade" id="contractModal" tabindex="-1" aria-labelledby="contractModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="contractModalLabel">Generate Contract</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p>Are you sure you want to generate this contract?</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary" id="confirmGenerate">Generate</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 {% endblock %}
+
+    <!-- Modal for confirmation -->
+    <!-- <div class="modal fade" id="contractModal" tabindex="-1" aria-labelledby="contractModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="contractModalLabel">Confirm Contract Generation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to generate a contract for <span id="employee-name"></span>?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmGenerateContract">Generate Contract</button>
+                </div> -->
+
+
 
