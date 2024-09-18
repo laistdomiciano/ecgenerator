@@ -1,38 +1,42 @@
 {% extends "home.html" %}
 
-{% block nav_buttons %}
-<nav>
-    <a href="/logout" class="btn btn-danger">Logout</a>
-</nav>
-{% endblock %}
-
 {% block content %}
 <div class="container mt-5 dashboard-container">
     <h2>Create Contract</h2>
 
-    <!-- Form for creating a contract -->
-    <form method="POST" action="/create_contract">
+    <!-- Form for creating contract -->
+    <form id="create-contract-form" action="/create_contract" method="POST" class="needs-validation" novalidate>
         <!-- Dropdown for selecting contract type -->
-        <div class="form-group mt-4">
-            <label for="contractTypeDropdown">Select Contract Type</label>
-            <select class="form-control" id="contractTypeDropdown" name="contract_type">
+        <div class="mb-3">
+            <label for="contractType" class="form-label">Select Contract Type</label>
+            <select id="contractType" name="contract_type_id" class="form-select" required>
+                <option value="" selected disabled>Select Contract Type</option>
                 {% for contract in contracts %}
                 <option value="{{ contract.id }}">{{ contract.name }}</option>
                 {% endfor %}
             </select>
+            <div class="invalid-feedback">
+                Please select a contract type.
+            </div>
         </div>
 
-        <!-- Dropdown for selecting employees without contract -->
-        <div class="form-group mt-4">
-            <label for="employeeDropdown">Select Employee</label>
-            <select class="form-control" id="employeeDropdown" name="employee_id">
+        <!-- Dropdown for selecting employee -->
+        <div class="mb-3">
+            <label for="employee" class="form-label">Select Employee</label>
+            <select id="employee" name="employee_id" class="form-select" required>
+                <option value="" selected disabled>Select Employee</option>
                 {% for employee in employees %}
                 <option value="{{ employee.id }}">{{ employee.employee_name }}</option>
                 {% endfor %}
             </select>
+            <div class="invalid-feedback">
+                Please select an employee.
+            </div>
         </div>
 
-        <button type="submit" class="btn btn-primary mt-4">Generate Contract</button>
+        <!-- Submit button to generate contract -->
+        <button type="submit" class="btn btn-primary">Generate Contract</button>
     </form>
+
 </div>
 {% endblock %}
