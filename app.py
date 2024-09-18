@@ -174,8 +174,9 @@ def create_contract():
     }
 
     try:
-        response_employee = requests.get(f"{BACKEND_API_URL}/employees", headers=headers)
-        response_contract = requests.get(f"{BACKEND_API_URL}/contracts", headers=headers)
+        # Fetch employees without contracts and contract types
+        response_employee = requests.get(f"{BACKEND_API_URL}/employees_wo_contract", headers=headers)
+        response_contract = requests.get(f"{BACKEND_API_URL}/get_contract_types", headers=headers)
 
         if response_employee.status_code == 200 and response_contract.status_code == 200:
             employees = response_employee.json()
