@@ -1,7 +1,11 @@
 {% extends "home.html" %}
 
 {% block nav_buttons %}
-    <!-- Override this block to remove the navigation buttons on the login page -->
+
+<nav>
+    <a href="/logout" class="btn btn-danger">Logout</a>
+</nav>
+
 {% endblock %}
 
 {% block content %}

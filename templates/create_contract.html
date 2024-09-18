@@ -1,42 +1,38 @@
 {% extends "home.html" %}
 
 {% block nav_buttons %}
-    <!-- Override this block to remove the navigation buttons on the login page -->
+<nav>
+    <a href="/logout" class="btn btn-danger">Logout</a>
+</nav>
 {% endblock %}
 
 {% block content %}
 <div class="container mt-5 dashboard-container">
     <h2>Create Contract</h2>
 
-    <!-- Dropdown for selecting contract type -->
-    <div class="dropdown mt-4">
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="contractTypeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            Select Contract Type
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="contractTypeDropdown" id="contract-types-list">
-            {% for contract in contracts %}
-            <li><a class="dropdown-item" href="#" data-type="{{ contract.id }}">{{ contract.name }}</a></li>
-            {% endfor %}
-        </ul>
-    </div>
+    <!-- Form for creating a contract -->
+    <form method="POST" action="/create_contract">
+        <!-- Dropdown for selecting contract type -->
+        <div class="form-group mt-4">
+            <label for="contractTypeDropdown">Select Contract Type</label>
+            <select class="form-control" id="contractTypeDropdown" name="contract_type">
+                {% for contract in contracts %}
+                <option value="{{ contract.id }}">{{ contract.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
 
-    <!-- Dropdown for selecting employees without contract -->
-    <div class="dropdown mt-4">
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="employeeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            Select Employee
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="employeeDropdown" id="employees-list">
-            {% for employee in employees %}
-            <li><a class="dropdown-item" href="#" data-id="{{ employee.id }}">{{ employee.employee_name }}</a></li>
-            {% endfor %}
-        </ul>
-    </div>
+        <!-- Dropdown for selecting employees without contract -->
+        <div class="form-group mt-4">
+            <label for="employeeDropdown">Select Employee</label>
+            <select class="form-control" id="employeeDropdown" name="employee_id">
+                {% for employee in employees %}
+                <option value="{{ employee.id }}">{{ employee.employee_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
 
-    <!-- Button to generate contract -->
-    <button id="generateContractBtn" class="btn btn-primary mt-4" disabled>
-        Generate Contract
-    </button>
-
+        <button type="submit" class="btn btn-primary mt-4">Generate Contract</button>
+    </form>
 </div>
 {% endblock %}
-
