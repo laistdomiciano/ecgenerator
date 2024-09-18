@@ -188,7 +188,6 @@ def create_contract():
 @app.route('/create_contract', methods=['POST'])
 @token_required
 def create_contract_post():
-    # Fetch employee_id and contract_type_id from form data (not JSON)
     employee_id = request.form.get('employee_id')
     contract_type_id = request.form.get('contract_type_id')
 
@@ -208,8 +207,9 @@ def create_contract_post():
         response = requests.post(f"{BACKEND_API_URL}/create_contract/{contract_type_id}/{employee_id}", headers=headers)
 
         if response.status_code == 201:
-            flash('Contract created successfully!', 'success')
-            return redirect(url_for('dashboard'))
+            result = response.json()
+            # Redirect the user to the S3 URL to download the PDF
+            return redirect(result['pdf_url'])
         else:
             error = response.json().get('error', 'An error occurred while generating the contract.')
             return render_template('create_contract.html', error=error)
