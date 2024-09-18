@@ -83,25 +83,16 @@ def login():
     result = response.json()
 
     if response.status_code == 200 and 'token' in result:
-        print("Two")
-        # Check if 'id' exists in the result['user'] object
-        if 'id' in result['user']:
-            print("Three")
-            # Store user information and token in the session
-            session['user'] = result['user']
-            session['access_token'] = result['token']
-            # Render the dashboard with user info
-            return redirect(url_for('dashboard'))
-        else:
-            print("Four")
-            # Handle the case where 'id' is missing
-            error = "User ID not found in the response. Please contact support."
-            return render_template('login.html', error=error)
+        # Store user information and token in the session
+        session['user'] = result['user']
+        session['access_token'] = result['token']
+        # Redirect to dashboard after successful login
+        return redirect(url_for('dashboard'))
     else:
-        print("Five")
-        # Handle login errors (invalid credentials, etc.)
+        # Handle login errors
         error = result.get('error', 'Invalid credentials or an error occurred.')
         return render_template('login.html', error=error)
+
 
 
 @app.route('/dashboard')
@@ -118,6 +109,7 @@ def dashboard():
 @app.route('/logout')
 @token_required
 def logout():
+    session.pop('user', None)
     session.pop('access_token', None)
     return redirect(url_for('login'))
 
@@ -191,6 +183,37 @@ def create_contract():
         return render_template('create_contract.html', error=f"An error occurred: {str(e)}")
     except ValueError as e:
         return render_template('create_contract.html', error="Invalid response from the server.")
+
+
+@app.route('/create_contract', methods=['POST'])
+@token_required
+def create_contract_post():
+    data = request.get_json()
+    employee_id = data.get('employee_id')
+    contract_type_id = data.get('contract_type_id')
+
+    if not employee_id or not contract_type_id:
+        return jsonify({'error': 'Employee ID and contract type ID are required.'}), 400
+
+    headers = {
+        'Authorization': f"Bearer {session.get('access_token')}"
+    }
+
+    payload = {
+        'employee_id': employee_id,
+        'contract_type_id': contract_type_id
+    }
+
+    try:
+        response = requests.post(f"{BACKEND_API_URL}/create_contract", json=payload, headers=headers)
+
+        if response.status_code == 201:
+            return jsonify({'success': True}), 201
+        else:
+            error = response.json().get('error', 'An error occurred while generating the contract.')
+            return jsonify({'error': error}), 400
+    except requests.exceptions.RequestException as e:
+        return jsonify({'error': f"An error occurred: {str(e)}"}), 500
 
 
 @app.route('/update_user/<int:user_id>', methods=['GET', 'POST'])

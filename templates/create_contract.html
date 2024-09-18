@@ -1,5 +1,9 @@
 {% extends "home.html" %}
 
+{% block nav_buttons %}
+    <!-- Override this block to remove the navigation buttons on the login page -->
+{% endblock %}
+
 {% block content %}
 <div class="container mt-5 dashboard-container">
     <h2>Create Contract</h2>
@@ -29,27 +33,10 @@
     </div>
 
     <!-- Button to generate contract -->
-    <button id="generateContractBtn" class="btn btn-primary mt-4" data-bs-toggle="modal" data-bs-target="#contractModal">
+    <button id="generateContractBtn" class="btn btn-primary mt-4" disabled>
         Generate Contract
     </button>
 
-    <!-- Modal for confirmation -->
-    <!--<div class="modal fade" id="contractModal" tabindex="-1" aria-labelledby="contractModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="contractModalLabel">Confirm Contract Generation</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to generate a contract for <span id="employee-name"></span>?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="confirmGenerateContract">Generate Contract</button>
-                </div>-->
-            </div>
-        </div>
-    </div>
 </div>
 {% endblock %}
+
