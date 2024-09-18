@@ -13,7 +13,7 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 app.secret_key = os.environ.get('FRONTEND_SECRET_KEY', '1234secret')
 
-BACKEND_API_URL = os.environ.get('BACKEND_API_URL', 'http://127.0.0.1:5000')
+BACKEND_API_URL = os.environ.get('BACKEND_API_URL', 'https://ecgenerator-backend.onrender.com')
 
 
 def token_required(f):

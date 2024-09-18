@@ -1,5 +1,11 @@
 {% extends "home.html" %}
 
+{% block nav_buttons %}
+<nav>
+    <a href="/logout" class="btn btn-danger">Logout</a>
+</nav>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-5 dashboard-container">
     <h2>Create Contract</h2>
