@@ -5,7 +5,6 @@ import os
 from functools import wraps
 
 
-
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
 
@@ -14,13 +13,14 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 app.secret_key = os.environ.get('FRONTEND_SECRET_KEY', '1234secret')
 
-BACKEND_API_URL = os.environ.get('BACKEND_API_URL', 'https://ecgenerator-backend.onrender.com')
+BACKEND_API_URL = os.environ.get('BACKEND_API_URL', 'http://127.0.0.1:5000')
 
 
 def token_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'access_token' not in session:
+            print ("Hello - Inside Token")
             return redirect(url_for('login', next=request.url))
         return f(*args, **kwargs)
     return decorated_function
@@ -66,37 +66,42 @@ def signup():
 
     return render_template('signup.html')
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        data = {
-            'username': request.form.get('username'),
-            'password': request.form.get('password')
-        }
 
-        response = requests.post(f"{BACKEND_API_URL}/login", json=data)
-        result = response.json()
-
-        if response.status_code == 200 and 'token' in result:
-            # Check if 'id' exists in the result['user'] object
-            if 'id' in result['user']:
-                # Store user information and token in the session
-                session['user'] = result['user']
-                session['access_token'] = result['token']
-
-                # Render the dashboard with user info
-                return render_template('dashboard.html', user=session['user'])
-            else:
-                # Handle the case where 'id' is missing
-                error = "User ID not found in the response. Please contact support."
-                return render_template('login.html', error=error)
-        else:
-            # Handle login errors (invalid credentials, etc.)
-            error = result.get('error', 'Invalid credentials or an error occurred.')
-            return render_template('login.html', error=error)
-
+@app.route('/login', methods=['GET'])
+def show_login_form():
     return render_template('login.html')
 
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = {
+        'username': request.form.get('username'),
+        'password': request.form.get('password')
+    }
+
+    response = requests.post(f"{BACKEND_API_URL}/login", json=data)
+    result = response.json()
+
+    if response.status_code == 200 and 'token' in result:
+        print("Two")
+        # Check if 'id' exists in the result['user'] object
+        if 'id' in result['user']:
+            print("Three")
+            # Store user information and token in the session
+            session['user'] = result['user']
+            session['access_token'] = result['token']
+            # Render the dashboard with user info
+            return redirect(url_for('dashboard'))
+        else:
+            print("Four")
+            # Handle the case where 'id' is missing
+            error = "User ID not found in the response. Please contact support."
+            return render_template('login.html', error=error)
+    else:
+        print("Five")
+        # Handle login errors (invalid credentials, etc.)
+        error = result.get('error', 'Invalid credentials or an error occurred.')
+        return render_template('login.html', error=error)
 
 
 @app.route('/dashboard')
@@ -106,7 +111,9 @@ def dashboard():
     if token:
         return render_template('dashboard.html', user=session.get('user'))
     else:
+        print("Going back to login")
         return redirect(url_for('login'))
+
 
 @app.route('/logout')
 @token_required
